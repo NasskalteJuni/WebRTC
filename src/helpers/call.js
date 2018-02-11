@@ -4,11 +4,7 @@ export default class Call{
         this.config = config;
         this.send = send;
         this.receive = receive;
-        this.caller = false;
-        this.pc = new RTCPeerConnection(config);
-        this.__streamSelf(null);
-        this.__streamRemote(null);
-        this.state = 'passive';
+        this.__clear();
 
         this.receive('ring', () => this.state = 'picking');
         this.receive('start', () => this.__connect());
