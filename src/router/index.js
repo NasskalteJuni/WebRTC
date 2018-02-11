@@ -25,7 +25,7 @@ const router = new Router({routes});
 
 
 router.beforeEach((to, from, next) => {
-    if(to.name === 'Call' && (!this.a.app.$store.state.login.loggedIn || this.a.app.$store.getters.users.indexOf(to.params.id))){
+    if(to.name === 'Call' && (!this.a.app.$store.state.login.loggedIn || this.a.app.$store.getters.users.indexOf(to.params.id) < 0)){
         next('/')
     }else{
         next();
