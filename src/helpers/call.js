@@ -54,15 +54,9 @@ export default class Call{
     }
 
     __connect(){
+        let off = null;
         this.pc.onicecandidate = (e) => this.send('ice', e.candidate);
         this.pc.ontrack = (e) => this.__streamRemote(e.track);
-        this.__initiate();
-    }
-
-
-    __initiate(){
-        console.log('called initiate',this._streamSelf, this)
-        let off = null;
         this._streamSelf.getTracks().forEach(track => this.pc.addTrack(track, this._streamSelf));
         this.pc.createOffer()
             .then((sdp) => off = sdp)
