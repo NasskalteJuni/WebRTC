@@ -45,9 +45,6 @@
                 if(this.$store.getters.users.indexOf(name) < 0) this.$router.push('/');
                 return name;
             },
-            self(){
-                return this.$store.state.login.user;
-            },
             call(){
                 return this.$store.getters.call(this.partner);
             },
@@ -66,10 +63,8 @@
                 window.navigator.mediaDevices.getUserMedia({video: true, audio: true})
                     .then((stream) => {
                         if(this.call.state === 'passive') {
-                            console.log('Call.vue', this.self);
                             this.$store.dispatch('ring', {stream, user: this.partner});
                         }else{
-                            console.log('Call.vue', this.self);
                             this.$store.dispatch('accept', {stream, user: this.partner});
                         }
                     })

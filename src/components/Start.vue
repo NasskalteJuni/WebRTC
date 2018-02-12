@@ -31,7 +31,7 @@
         },
         computed: {
             loggedIn(){
-                return this.$store.state.login.loggedIn;
+                return this.$store.state.auth.loggedIn;
             }
         }
     }

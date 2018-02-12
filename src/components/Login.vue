@@ -33,13 +33,13 @@
         },
         computed: {
             submittable(){
-                return this.$store.state.login.errors.length === 0 && this.agreement;
+                return this.$store.state.auth.errors.length === 0 && this.agreement;
             },
             errorMessages() {
-                return this.$store.state.login.errors;
+                return this.$store.state.auth.errors;
             },
             loggedIn(){
-                return this.$store.state.login.loggedIn;
+                return this.$store.state.auth.loggedIn;
             },
             small() {
                 let size = this.$vuetify.breakpoint.name;

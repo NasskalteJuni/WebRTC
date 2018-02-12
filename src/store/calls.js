@@ -58,24 +58,23 @@ export default {
     },
     actions: {
         ring: ({commit, rootState}, callObj) => {
-            console.log(callObj);
-            send('ring', rootState.login.user, callObj.user, null);
+            send('ring', rootState.auth.user, callObj.user, null);
             commit('selfStream', {user: callObj.user, stream: callObj.stream});
             commit('caller', {user: callObj.user, isCaller: true});
             commit('state', {user: callObj.user, state: 'ringing'});
         },
         accept: ({commit, rootState}, callObj) => {
-            console.log(callObj);
-            send('start', rootState.login.user, callObj.user, null);
+            send('start', rootState.auth.user, callObj.user, null);
             commit('selfStream', {user: callObj.user, stream: callObj.stream});
             commit('caller', {user: callObj.user, isCaller: false});
             commit('state', {user: callObj.user, state: 'call'});
         },
         end: ({dispatch, rootState}, callObj) => {
-            send('hangup', rootState.login.user, callObj.user, null);
+            send('hangup', rootState.auth.user, callObj.user, null);
             dispatch('clear', callObj);
         },
         clear: ({commit, state}, callObj) => {
+            if(!state.conversations || !state.conversations[callObj.user]) return;
             if(state.conversations[callObj.user].pc && state.conversations[callObj.user].selfStream){
                 state.conversations[callObj.user].selfStream.getTracks().forEach(track => track.stop());
                 state.conversations[callObj.user].pc.removeStream(state.conversations[callObj.user].selfStream)
@@ -90,10 +89,9 @@ export default {
             commit('state', {user: callObj.user, state: 'passive'});
         },
         connect: ({commit, state, rootState}, callObj) => {
-            console.log(callObj);
             let off = null;
             commit('state',{user: callObj.user, state: 'call'});
-            state.conversations[callObj.user].pc.onicecandidate = (e) => send('ice', rootState.login.user, callObj.user, e.candidate);
+            state.conversations[callObj.user].pc.onicecandidate = (e) => send('ice', rootState.auth.user, callObj.user, e.candidate);
             state.conversations[callObj.user].pc.ontrack = (e) => {
                 if(!state.conversations[callObj.user].remoteStream) commit('remoteStream', {user: callObj.user, stream: new MediaStream()});
                 state.conversations[callObj.user].remoteStream.addTrack(e.track);
@@ -104,11 +102,11 @@ export default {
             state.conversations[callObj.user].pc.createOffer()
                 .then((sdp) => off = sdp)
                 .then(() => state.conversations[callObj.user].pc.setLocalDescription(off))
-                .then(() => send('offer', rootState.login.user, callObj.user, off))
+                .then(() => send('offer', rootState.auth.user, callObj.user, off))
         },
         negotiate({commit, state, rootState}, callObj){
             let ans = null;
-            state.conversations[callObj.user].pc.onicecandidate = (e) => send('ice', rootState.login.user, callObj.user, e.candidate);
+            state.conversations[callObj.user].pc.onicecandidate = (e) => send('ice', rootState.auth.user, callObj.user, e.candidate);
             state.conversations[callObj.user].pc.ontrack = (e) => {
                 if(!state.conversations[callObj.user].remoteStream) commit('remoteStream', {user: callObj.user, stream: new MediaStream()});
                 state.conversations[callObj.user].remoteStream.addTrack(e.track);
@@ -120,7 +118,7 @@ export default {
                 .then(() => state.conversations[callObj.user].pc.createAnswer(callObj.off))
                 .then((sdp) => ans = sdp)
                 .then(() => state.conversations[callObj.user].pc.setLocalDescription(ans))
-                .then(() => send('answer', rootState.login.user, callObj.user, ans))
+                .then(() => send('answer', rootState.auth.user, callObj.user, ans))
         },
         finalize({state}, callObj){
             state.conversations[callObj.user].pc.setRemoteDescription(callObj.ans);
@@ -138,7 +136,8 @@ export default {
                 dispatch('clear', {user});
             });
         },
-        socket_bye: ({commit}, user) => {
+        socket_bye: ({dispatch, commit}, user) => {
+            dispatch('clear', {user});
             commit('remove', user);
         },
         socket_ring: ({commit}, msg) => {

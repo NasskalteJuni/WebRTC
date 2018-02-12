@@ -93,13 +93,13 @@
     },
     computed: {
         loggedIn(){
-            return this.$store.state.login.loggedIn;
+            return this.$store.state.auth.loggedIn;
         },
         avatar(){
-            return this.$store.state.login.avatar;
+            return this.$store.state.auth.avatar;
         },
         name(){
-            return this.$store.state.login.name;
+            return this.$store.state.auth.name;
         },
         title(){
             let title = 'WebRTC Demo';
@@ -109,7 +109,7 @@
             return title;
         },
         items(){
-            if(!this.$store.state.login.loggedIn){
+            if(!this.$store.state.auth.loggedIn){
                 return [];
             }else{
                 return this.$store.getters.users;
@@ -122,7 +122,8 @@
         },
         logout(){
             this.$store.dispatch('logout')
-                .then(name => this.$socket.emit('bye', name));
+                .then(name => this.$socket.emit('bye', name))
+                .then(() => this.$store.getters.users.forEach(user => this.$store.dispatch('clear', {user})));
             this.$router.push('/');
         },
         callstate(user){
