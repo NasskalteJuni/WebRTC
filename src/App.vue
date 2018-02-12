@@ -7,7 +7,7 @@
         <v-toolbar-side-icon class="white--text">
           <v-icon>person_pin</v-icon>
         </v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">Zurzeit Online</v-toolbar-title>
+        <v-toolbar-title class="white--text" v-text="loggedIn ? name: 'Menü'"></v-toolbar-title>
       </v-toolbar>
 
       <v-list class="pt-0">

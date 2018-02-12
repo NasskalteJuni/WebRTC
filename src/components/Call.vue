@@ -2,12 +2,15 @@
     <v-layout row wrap>
         <v-flex xs10 offset-xs1>
             <div class="call-container">
-                <video class="external-video" autoplay ref="external" :src="remoteSrc">
+                <video class="external-video" autoplay :src="remoteSrc">
 
                 </video>
-                <video class="self-video"autoplay ref="self" :src="selfSrc" v-if="isCallstateOf(['call'])"></video>
+                <video class="self-video"autoplay :src="selfSrc" v-if="isCallstateOf(['call'])"></video>
                 <div class="notice-container" v-if="isCallstateOf(['picking'])">
-                    <p class="notice">{{partner}} ruft an...</p>
+                    <p class="notice pick">{{partner}} ruft an...</p>
+                </div>
+                <div class="notice-container" v-if="isCallstateOf(['ringing'])">
+                    <p class="notice ring"> warte auf {{partner}}...</p>
                 </div>
                 <div class="controls-container">
                     <div class="controls primary">
@@ -17,8 +20,11 @@
                         <v-btn fab v-if="isCallstateOf(['ringing', 'picking', 'call'])" color="red" class="white--text" @click="stop">
                             <v-icon>call_end</v-icon>
                         </v-btn>
-                        <v-btn fab v-if="isCallstateOf(['call', 'passive','ringing'])" @click="muted=!muted">
+                        <v-btn fab v-if="isCallstateOf(['call', 'passive','ringing'])" @click="toggleAudio()">
                             <v-icon v-text="muted ? 'mic' : 'mic_off'"/>
+                        </v-btn>
+                        <v-btn fab v-if="isCallstateOf(['call', 'passive','ringing'])" @click="toggleVideo()">
+                            <v-icon v-text="hidden ? 'visibility' : 'visibility_off'"/>
                         </v-btn>
                     </div>
                 </div>
@@ -37,6 +43,7 @@
         data(){
             return {
                 muted: false,
+                hidden: false
             };
         },
         computed: {
@@ -75,6 +82,14 @@
             },
             stop(){
                 this.$store.dispatch('end', {user: this.partner});
+            },
+            toggleAudio(){
+                this.muted = !this.muted;
+                this.$store.dispatch('enable', {user: this.partner, kind: 'hidden', to: this.muted});
+            },
+            toggleVideo(){
+                this.hidden = !this.hidden;
+                this.$store.dispatch('enable', {user: this.partner, kind: 'video', to: this.hidden});
             },
             isCallstateOf(states){
                 return states.indexOf(this.callstate) >= 0;
@@ -118,7 +133,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: gray;
+        background: rgb(50,50,50);
     }
 
     .self-video{
@@ -129,6 +144,7 @@
         height: 20%;
         z-index: 1;
         box-shadow: 0 0 25px rgba(0,0,0,0.2);
+        transform: scaleX(-1);
     }
 
     .controls{
@@ -148,6 +164,13 @@
         font-size: 2em;
         position: relative;
         color: white;
+    }
+
+    .notice.ring{
+        animation: blink 3s ease infinite;
+    }
+
+    .notice.pick{
         animation: blink 2s ease infinite, shake 1s linear infinite;
     }
 

@@ -39,7 +39,8 @@ export default {
             return new Promise((resolve, reject) => {
                 commit('clearFails');
                 const len = name.length;
-                const mtc = name.match(/[a-z]/g);
+                const mtc = name.match(/[a-z_]/g);
+                const underscore = name.replace('_','').length === 0;
                 const empty = len === 0, short = len < 2, long = len > 20, characters = !mtc || mtc.length !== len;
                 if (empty || short || long || characters) {
                     if (empty) {
@@ -48,6 +49,9 @@ export default {
                         commit('fail', 'Bitte wählen sie einen längeren Namen');
                     } else if (long) {
                         commit('fail', 'Bitte wählen sie einen kürzeren Namen');
+                    }
+                    if (underscore){
+                        commit('fail', 'Bitte verwenden sie nicht nur Underscores');
                     }
                     if (!empty && characters) {
                         commit('fail', 'Bitte verwenden sie nur Kleinbuchstaben und auch keine Umlaute')

@@ -73,6 +73,19 @@ export default {
             send('hangup', rootState.auth.user, callObj.user, null);
             dispatch('clear', callObj);
         },
+        enable: ({state}, configObj) => {
+            if(state.conversations[configObj.user] && state.conversations[configObj.user].selfStream && state.conversations[configObj.user].selfStream.getTracks){
+                state.conversations[configObj.user].selfStream.getTracks().forEach(track => {
+                    if(track.kind === configObj.kind){
+                        if(configObj.toggle === true){
+                            track.enabled = !track.enabled;
+                        }else if(typeof configObj.to === 'boolean'){
+                            track.enabled = configObj.to;
+                        }
+                    }
+                });
+            }
+        },
         clear: ({commit, state}, callObj) => {
             if(!state.conversations || !state.conversations[callObj.user]) return;
             if(state.conversations[callObj.user].pc && state.conversations[callObj.user].selfStream){
