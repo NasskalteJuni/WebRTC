@@ -1,9 +1,10 @@
 export default class Call{
-    constructor(send, receive, config){
+    constructor(send, receive, config, persist){
         console.log('constructed new Call');
         this.config = config;
         this.send = send;
         this.receive = receive;
+        this.persist = persist;
         this.__clear();
 
         this.receive('ring', () => this.state = 'picking');
@@ -20,18 +21,21 @@ export default class Call{
         this.send('ring');
         this.caller = true;
         this.state = 'ringing';
+        this.persist(this);
     }
 
     accept(stream){
         console.log('called accept', stream, this);
         this.__streamSelf(stream);
         this.send('start');
-        this.state = 'call'
+        this.state = 'call';
+        this.persist(this);
     }
 
     end(){
         this.send('hangup');
         this.__clear();
+        this.persist(this)
     }
 
     __clear(){
@@ -47,10 +51,12 @@ export default class Call{
         this.__streamSelf(null);
         this.__streamRemote(null);
         this.state = 'passive';
+        this.persist(this);
     }
 
     __connect(){
         let off = null;
+        this.state = 'call';
         this.pc.onicecandidate = (e) => this.send('ice', e.candidate);
         this.pc.ontrack = (e) => this.__streamRemote(e.track);
         this._streamSelf.getTracks().forEach(track => this.pc.addTrack(track, this._streamSelf));
@@ -58,6 +64,7 @@ export default class Call{
             .then((sdp) => off = sdp)
             .then(() => this.pc.setLocalDescription(off))
             .then(() => this.send('offer', off))
+            .then(() => this.persist(this));
     }
 
     __negotiate(off){
@@ -71,11 +78,13 @@ export default class Call{
             .then((sdp) => ans = sdp)
             .then(() => this.pc.setLocalDescription(ans))
             .then(() => this.send('answer', ans))
+            .then(() => this.persist(this))
     }
 
     __finalize(ans){
         console.log('called finalize', this._streamSelf, this);
-        return this.pc.setRemoteDescription(ans)
+        this.pc.setRemoteDescription(ans)
+            .then(this.persist(this))
     }
 
     __streamSelf(stream){

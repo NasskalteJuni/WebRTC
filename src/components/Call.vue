@@ -2,10 +2,10 @@
     <v-layout row wrap>
         <v-flex xs10 offset-xs1>
             <div class="call-container">
-                <video class="external-video" autoplay ref="external">
+                <video class="external-video" autoplay ref="external" :src="remoteSrc">
 
                 </video>
-                <video class="self-video"autoplay ref="self" v-if="isCallstateOf(['call'])"></video>
+                <video class="self-video"autoplay ref="self" :src="selfSrc" v-if="isCallstateOf(['call'])"></video>
                 <div class="notice-container" v-if="isCallstateOf(['picking'])">
                     <p class="notice">{{partner}} ruft an...</p>
                 </div>
@@ -49,10 +49,16 @@
                 return this.$store.state.login.user;
             },
             call(){
-                return this.$store.getters.call(this.partner)
+                return this.$store.getters.call(this.partner);
             },
             callstate(){
                 return this.call ? this.call.state : '';
+            },
+            selfSrc(){
+                return (this.call && this.call.selfStream) ? window.URL.createObjectURL(this.call.selfStream) : '';
+            },
+            remoteSrc(){
+                return (this.call && this.call.remoteStream) ? window.URL.createObjectURL(this.call.remoteStream) : '';
             }
         },
         methods:{
@@ -60,18 +66,20 @@
                 window.navigator.mediaDevices.getUserMedia({video: true, audio: true})
                     .then((stream) => {
                         if(this.call.state === 'passive') {
-                            this.call.ring(stream);
+                            console.log('Call.vue', this.self);
+                            this.$store.dispatch('ring', {stream, user: this.partner});
                         }else{
-                            this.call.accept(stream);
+                            console.log('Call.vue', this.self);
+                            this.$store.dispatch('accept', {stream, user: this.partner});
                         }
                     })
                     .catch((err) => {
                         console.error(err);
-                        this.call.end();
+                        this.$store.dispatch('end', {user: this.partner});
                     });
             },
             stop(){
-                this.call.end();
+                this.$store.dispatch('end', {user: this.partner});
             },
             isCallstateOf(states){
                 return states.indexOf(this.callstate) >= 0;
