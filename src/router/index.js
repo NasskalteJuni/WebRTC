@@ -12,7 +12,7 @@ const routes = [
     {
         name: 'Call',
         path: '/call/:id',
-        component: Call,
+        component: Call
     },
     {
         name: 'About',
@@ -25,10 +25,14 @@ const router = new Router({routes});
 
 
 router.beforeEach((to, from, next) => {
-    if(to.name === 'Call' && (!this.a.app.$store.state.auth.loggedIn || this.a.app.$store.getters.users.indexOf(to.params.id) < 0)){
-        next('/')
-    }else{
-        next();
+    try{
+        if(to.name === 'Call' && this.a.app.$store.state.auth.loggedIn && this.a.app.$store.getters.users.indexOf(to.params.id) < 0){
+            next('/')
+        }else{
+            next();
+        }
+    }catch(err){
+        console.error(err);
     }
 });
 router.onError(console.error);

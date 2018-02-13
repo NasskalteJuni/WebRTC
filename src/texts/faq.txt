@@ -1,0 +1,20 @@
+Q: Wie sende ich jemanden meine Kontaktdaten?
+A: Wenn sie sich angemeldet haben, haben sie die Möglichkeit, im Navigationsmenü auf \'Teilen\' zu klicken.
+Dies kopiert automatisch einen Link, der über Mail, Messenger oder auf jeden beliebigen Wege weitergegeben werden kann.'
+Unter diesem Link sind sie unter ihren Nutzernahmen erreichbar.'
+
+Q: Ich kann keine Anrufe aufbauen oder annehmen, wieso?
+A: Es gibt genug Hindernisse, die eine Verbindung unmöglich machen.
+So könnten sie ggf. hinter einer Firewall sitzen, die das Telefonat blockiert.
+
+Q: Wird Feature X, Y oder Z implementiert?
+A: Dies ist nur eine Demonstration, ein Beispiel und wird nicht weiter entwickelt.
+
+Q: Ich würde gerne mehr über die Funktionsweise von WebRTC erfahren
+A: In der Browserkonsole kann <code>RTC_VERBOSE=true;</code> gesetzt werden, um genauere Logs zu erhalten
+
+Q: Welche Frameworks wurden verwendet?
+A: Die Single Page App wurde mittels Vue2 realisiert, das Routing liefert hier der Vue-Router, die Zustandsverwaltung / das State-Management der Vuex-Store.
+Die Pixel-Avatare kommen durch GIXI zu stande, Socket.io erleichtert die Arbeit mit Websockets, welche mit Vue-Socket.io eingebunden werden.
+Serverseitig übernimmt Node mit Express das bereitstellen der Seiten und Socket.io das Signalling.
+Der Rest ist quasi 'reine WebRTC-Magie'.

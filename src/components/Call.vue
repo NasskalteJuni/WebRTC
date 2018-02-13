@@ -1,5 +1,6 @@
 <template>
-    <v-layout row wrap>
+    <login v-if="!loggedIn"></login>
+    <v-layout row wrap v-else>
         <v-flex xs10 offset-xs1>
             <div class="call-container">
                 <video class="external-video" autoplay :src="remoteSrc">
@@ -37,14 +38,12 @@
 </template>
 
 <script>
+    import Login from './Login'
 
     export default {
         name: "call",
-        data(){
-            return {
-                muted: false,
-                hidden: false
-            };
+        components: {
+            Login
         },
         computed: {
             partner(){
@@ -63,6 +62,16 @@
             },
             remoteSrc(){
                 return (this.call && this.call.remoteStream) ? window.URL.createObjectURL(this.call.remoteStream) : '';
+            },
+            muted(){
+                return this.call && this.call.muted;
+            },
+            hidden(){
+                return this.call && this.call.hidden;
+            },
+            loggedIn(){
+                console.log()
+                return this.$store.state.auth.loggedIn;
             }
         },
         methods:{
@@ -84,12 +93,10 @@
                 this.$store.dispatch('end', {user: this.partner});
             },
             toggleAudio(){
-                this.muted = !this.muted;
-                this.$store.dispatch('enable', {user: this.partner, kind: 'hidden', to: this.muted});
+                this.$store.dispatch('enable', {user: this.partner, kind: 'audio', toggle: true});
             },
             toggleVideo(){
-                this.hidden = !this.hidden;
-                this.$store.dispatch('enable', {user: this.partner, kind: 'video', to: this.hidden});
+                this.$store.dispatch('enable', {user: this.partner, kind: 'video', toggle: true});
             },
             isCallstateOf(states){
                 return states.indexOf(this.callstate) >= 0;

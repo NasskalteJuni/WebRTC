@@ -1,7 +1,7 @@
-var path = require('path')
-var webpack = require('webpack')
+const path = require('path');
+const webpack = require('webpack');
 
-var resolve = (p) => path.resolve(__dirname, p)
+const resolve = (p) => path.resolve(__dirname, p);
 
 module.exports = {
   entry: './src/main.js',
@@ -45,6 +45,10 @@ module.exports = {
         }
       },
       {
+        test: /\.txt$/,
+        use: 'raw-loader'
+      },
+      {
         test: /\.styl$/,
         loader: ['style-loader', 'css-loader', 'stylus-loader']
       }
@@ -66,8 +70,10 @@ if (process.env.NODE_ENV === 'production') {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"production"'
-      }
+        NODE_ENV: '"production"',
+        SIGNALLING_SERVER: process.env.NODE_ENV === "production" ? (process.env.signaller || '127.0.0.1:3000') : (process.env.signaller || window.origin)
+      },
+      '__TEST' : 'testing'
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,

@@ -1,0 +1,18 @@
+<h2 id="agb">AGB</h2>
+<p>
+    Kurzfassung: Ich übernehme keine Haftung für irgendetwas. <br>
+</p>
+<p>
+    Etwas längere Fassung: Ich habe diese Anwendung als Beispiel-Implementation eines direkten WebRTC P2P Chats codiert.
+    Um die Webseiten über TLS bereitstellen zu können, habe ich das Hosting an Dritte vergeben,
+    jedoch vertraue ich dem Hoster, wahrscheinlich Heroku odr Openshift, die Korrektheit meiner Anwendung an.
+    Da einen Turnserver bereitzustellen ebenfalls aufwändig ist, hier selbiges vorgehen.
+</p>
+<p>
+    Die Videokonverenzen sind P2P, nichts wird gespeichert, nichts ausgewertet, alles wird direkt weitergeleitet.
+    Ich hafte somit in keinster Weise, was mit diesem Dienst gemacht wird, da ich ohnehin keinen Einfluss darauf habe.
+    Sollten sie als Nutzer einem anderen Nutzer nicht vertrauen, dann nehmen sie keine Anrufe von ihm an.
+</p>
+<p>
+    Fazit: Nutzen sie den Dienst auf ihre eigene Verantwortung
+</p>

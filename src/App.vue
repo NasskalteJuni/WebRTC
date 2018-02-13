@@ -7,7 +7,7 @@
         <v-toolbar-side-icon class="white--text">
           <v-icon>person_pin</v-icon>
         </v-toolbar-side-icon>
-        <v-toolbar-title class="white--text" v-text="loggedIn ? name: 'Menü'"></v-toolbar-title>
+        <v-toolbar-title class="white--text" v-text="loggedIn ? name: 'Menü'"/>
       </v-toolbar>
 
       <v-list class="pt-0">
@@ -32,6 +32,19 @@
           </v-list-tile-action>
           <v-list-tile-content>Info</v-list-tile-content>
         </v-list-tile>
+
+        <v-list-tile @click="share" v-if="loggedIn">
+          <v-list-tile-action>
+            <v-icon>share</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>Teilen</v-list-tile-content>
+          <transition name="fade">
+            <v-list-tile-avatar v-if="copied">
+              <v-icon class="copy-icon">content_copy</v-icon>
+            </v-list-tile-avatar>
+          </transition>
+        </v-list-tile>
+
         <v-list-tile @click="logout" v-if="loggedIn">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
@@ -80,10 +93,12 @@
 <script>
 
   import Avatar from './components/Avatar'
+  import clipboardCopy from './helpers/clipboardCopy'
 
   export default {
     data () {
       return {
+        copied: false,
         drawer: true,
         miniVariant: false,
       }
@@ -126,6 +141,12 @@
                 .then(() => this.$store.getters.users.forEach(user => this.$store.dispatch('clear', {user})));
             this.$router.push('/');
         },
+        share(){
+            let url = window.location.origin + '/#/call/' + this.$store.state.auth.name;
+            clipboardCopy(url, document.body);
+            this.copied = true;
+            setTimeout(() => this.copied = false, 3000);
+        },
         callstate(user){
             return this.$store.getters.call(user).state;
         },
@@ -155,13 +176,24 @@
     transform: scale(1.8) translateX(2vw) rotate(20deg);
   }
 
+  .copy-icon{
+    opacity: 1;
+  }
+
   .flip-enter-active, .flip-leave-active {
     transition: height .1s;
   }
 
   .flip-enter, .flip-leave-to /* .fade-leave-active below version 2.1.8 */ {
     height: 0;
+  }
 
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 1s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 
   .nav-item{

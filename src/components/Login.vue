@@ -8,7 +8,7 @@
                 <v-text-field label="Nutzername" v-model="name" :error-messages="errorMessages" id="login-name-field" autofocus autocomplete="off" required @keyup="check"/>
                 <v-spacer class="mt-2"/>
                 <v-checkbox v-model="agreement" label="AGB akzeptieren"/>
-                <small class="subtext">Bitte die <router-link to="About#agb">AGB</router-link> durchlesen</small>
+                <small class="subtext">Bitte die <router-link to="/About#agb">AGB</router-link> durchlesen</small>
                 <v-spacer class="mt-4 mb-4"/>
                 <v-btn color="primary" class="white--text" type="submit" :disabled="!submittable">Name bestätigen</v-btn>
             </v-form>
