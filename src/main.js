@@ -26,7 +26,7 @@ import {
 } from 'vuetify'
 
 Vue.use(VueRouter);
-Vue.use(VueSocket, /*document.origin*/'http://localhost:3000'+'/', store);
+Vue.use(VueSocket, SIGNALLER || document.origin, store);
 Vue.use(Vuetify, {
   components: {
     VApp,

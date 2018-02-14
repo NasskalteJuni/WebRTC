@@ -1,7 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const resolve = (p) => path.resolve(__dirname, p);
+
 
 module.exports = {
   entry: './src/main.js',
@@ -61,8 +63,13 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
-}
+  devtool: '#eval-source-map',
+  plugins: [
+      new webpack.DefinePlugin({
+        "SIGNALLER": process.env.SIGNALLER ? '"'+process.env.SIGNALLER+'"' : null
+      })
+  ]
+};
 
 if (process.env.NODE_ENV === 'production') {
   module.exports.devtool = '#source-map'
@@ -70,10 +77,12 @@ if (process.env.NODE_ENV === 'production') {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"production"',
-        SIGNALLING_SERVER: process.env.NODE_ENV === "production" ? (process.env.signaller || '127.0.0.1:3000') : (process.env.signaller || window.origin)
+        NODE_ENV: JSON.stringify('production'),
       },
-      '__TEST' : 'testing'
+      SIGNALLER: 'test'
+    }),
+    new HtmlWebpackPlugin({
+        template: 'index.html',
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
